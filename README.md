@@ -35,7 +35,7 @@ CREATE TABLE documentos (
 
 - En el archivo proxy.conf.json deben agregar la api que van a utilizar
 
-- Y en la carpeta src/app/servicios deben crear una carpeta para el servicio (por ejemplo servicio-abogados) y dentro crear el servicio con ng g s abogados
+- Y en la carpeta src/app/servicios deben crear una carpeta para el servicio (por ejemplo servicio-abogados y dentro crear el servicio con ng g s abogados)
 
 # #Guia 
 
