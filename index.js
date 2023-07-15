@@ -23,6 +23,6 @@ app.listen(app.get('port'),(error)=>{
     if(error)
     {console.log('error al iniciar el servidor: '+error)}
     else{
-        console.log('servidor iniciado en el prueto: '+port)
+        console.log('servidor iniciado en el puerto: '+port)
     }
 })
