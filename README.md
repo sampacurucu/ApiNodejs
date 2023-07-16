@@ -26,15 +26,6 @@
 - Clave: gestionlegal
 - Puerto: 5432
 - DB: postgres
-- Crean la tabla Documentos(si quiere probar la apidocumentos):
-CREATE TABLE documentos (
-  id SERIAL PRIMARY KEY,
-  codigo_juicio VARCHAR(20),
-  tipo VARCHAR(20),
-  nombre VARCHAR(20),
-  descripcion VARCHAR(30),
-  documento BYTEA
-);
 
 ## En el proyecto de Angular
 
