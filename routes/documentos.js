@@ -9,8 +9,8 @@ const conexion = require('../config/conexion');
 
 // get de documentos
 router.get('/',(req, res)=>{
-    // let sql = 'SELECT * FROM documentos';
-    let sql = 'SELECT id, codigo_juicio, tipo, nombre, descripcion, documento FROM documentos';
+    let sql = 'SELECT * FROM documentos';
+    // let sql = 'SELECT id, codigo_juicio, tipo, nombre, descripcion, documento FROM documentos';
     conexion.query(sql,(err, result)=>{
         if(err) throw err;
         else{
@@ -22,8 +22,8 @@ router.get('/',(req, res)=>{
 // get de un documento
 router.get('/:id',(req, res)=>{
     const {id}=req.params;
-    // let sql = 'SELECT * FROM documentos WHERE id = $1'
-    let sql = 'SELECT id, codigo_juicio, tipo, nombre, descripcion, documento FROM documentos WHERE id = $1';
+    let sql = 'SELECT * FROM documentos WHERE id = $1'
+    // let sql = 'SELECT id, codigo_juicio, tipo, nombre, descripcion, documento FROM documentos WHERE id = $1';
   
     conexion.query(sql,[id],(err, result)=>{
         if(err) throw err;
