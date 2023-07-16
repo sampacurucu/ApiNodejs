@@ -4,8 +4,7 @@
 - instalar: npm install express
 - instalar(postgres): npm install pg
 - Correr el servidor: npm run dev
-- verificar: http://localhost:3000/apidocumentos
-- apidocumentos es de la tabla documentos
+- verificar: http://localhost:3000
 
 - ### Para crear una nueva api de otra tabla
 
