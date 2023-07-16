@@ -1,7 +1,8 @@
 # ApiNodejs
 ## Para Nodejs
 - instalar nodemon: npm install --save-dev nodemon
-- instalar: npm install express mysql
+- instalar: npm install express
+- instalar(postgres): npm install pg
 - Correr el servidor: npm run dev
 - verificar: http://localhost:3000/apidocumentos
 - apidocumentos es de la tabla documentos
@@ -19,16 +20,20 @@
 - verificar: http://localhost:3000/apiabogados
 
 ## Base de Datos
-- Se utiliza mysql de xampp
-- Se crean una base de datos con el nombre de: gestionlegal
+- Datos de conexion a la BD
+- Host: 34.123.218.24
+- Usuario: postgres
+- Clave: gestionlegal
+- Puerto: 5432
+- DB: postgres
 - Crean la tabla Documentos(si quiere probar la apidocumentos):
 CREATE TABLE documentos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  codigo_juicio VARCHAR(255),
-  tipo VARCHAR(255),
-  nombre VARCHAR(255),
-  descripcion VARCHAR(255),
-  documento LONGBLOB
+  id SERIAL PRIMARY KEY,
+  codigo_juicio VARCHAR(20),
+  tipo VARCHAR(20),
+  nombre VARCHAR(20),
+  descripcion VARCHAR(30),
+  documento BYTEA
 );
 
 ## En el proyecto de Angular
