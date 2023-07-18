@@ -20,6 +20,7 @@ app.set('port',port)
 // rutas se coloca el nombre de la api de la tabla a utilizar 
 app.use('/apidocumentos', require('./routes/documentos'))
 app.use('/servicios-judiciales', require('./routes/servicios-judiciales'))
+app.use('/blogs-abogados', require('./routes/blogs-abogado'))
 
 
 

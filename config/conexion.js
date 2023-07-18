@@ -1,7 +1,5 @@
-// const mysql = require('mysql');
 const {Client} = require('pg');
 
-// const conexion = mysql.createConnection({
 const conexion = new Client({
     host: '34.123.218.24',
     user: 'postgres',
