@@ -1,10 +1,14 @@
 require ('./config/conexion');
 
 const express= require('express');
+var cors = require('cors')
 const port = (process.env.port || 4000);
 
 // express 
 const app = express();
+
+//cors
+app.use(cors())
 
 // admitir
 app.use(express.json())

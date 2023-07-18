@@ -2,7 +2,7 @@ const router = require('express').Router();
 const conexion = require('../config/conexion');
 
 router.get('/categorias',(req, res)=>{
-    let sql = 'SELECT * FROM categorias_servicios_judiciales';
+    const sql = 'SELECT * FROM categorias_servicios_judiciales';
     
     conexion.query(sql,(err, result)=>{
         if(err) throw err;
@@ -14,7 +14,12 @@ router.get('/categorias',(req, res)=>{
 
 router.get('/ubicaciones/:id_categoria',(req, res)=>{
     const { id_categoria } = req.params;
-    let sql = `SELECT * FROM ubicaciones_servicios_judiciales WHERE id_categoria=${id_categoria}`;
+    const sql = `select c.icono, u.* 
+                from ubicaciones_servicios_judiciales u 
+                inner join categorias_servicios_judiciales c 
+                on u.id_categoria=c.id 
+                where u.id_categoria=${id_categoria}`
+    
     
     conexion
     conexion.query(sql,(err, result)=>{
