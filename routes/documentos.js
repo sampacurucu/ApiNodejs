@@ -1,14 +1,9 @@
 const router = require('express').Router();
 const conexion = require('../config/conexion');
 
-// asignacion todas las rutas
-// rutas.get('/', function(req,res){  //example
-//     res.send('hola desde rutas/inicio')
-// });
-// asignacion todas las rutas
 
 // get de documentos
-router.get('/',(req, res)=>{
+router.get('/documentos',(req, res)=>{
     let sql = 'SELECT * FROM documentos';
     // let sql = 'SELECT id, codigo_juicio, tipo, nombre, descripcion, documento FROM documentos';
     conexion.query(sql,(err, result)=>{
@@ -20,7 +15,7 @@ router.get('/',(req, res)=>{
 });
 
 // get de un documento
-router.get('/:id',(req, res)=>{
+router.get('/documentos/:id',(req, res)=>{
     const {id}=req.params;
     let sql = 'SELECT * FROM documentos WHERE id = $1'
     // let sql = 'SELECT id, codigo_juicio, tipo, nombre, descripcion, documento FROM documentos WHERE id = $1';
@@ -34,7 +29,7 @@ router.get('/:id',(req, res)=>{
 });
 
 //agregar un documento
-router.post('/',(req,res)=>{
+router.post('/documentos',(req,res)=>{
     const{codigo_juicio,tipo,nombre,descripcion,documento} = req.body;
 
     let sql = `INSERT INTO documentos(codigo_juicio,tipo,nombre,descripcion, documento) 
@@ -48,7 +43,7 @@ router.post('/',(req,res)=>{
 });
 
 // eliminar
-router.delete('/:id',(req,res)=>{
+router.delete('/documentos/:id',(req,res)=>{
     const{id} = req.params;
 
     let sql =`DELETE FROM documentos where id = $1`;
@@ -61,7 +56,7 @@ router.delete('/:id',(req,res)=>{
 });
 
 //modificar
-router.put('/:id',(req, res)=>{
+router.put('/documentos/:id',(req, res)=>{
     const{id}=req.params
     const{codigo_juicio,tipo,nombre,descripcion,documento} = req.body
 
