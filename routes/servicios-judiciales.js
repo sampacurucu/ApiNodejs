@@ -18,11 +18,11 @@ router.get('/ubicaciones/:id_categoria',(req, res)=>{
                 from ubicaciones_servicios_judiciales u 
                 inner join categorias_servicios_judiciales c 
                 on u.id_categoria=c.id 
-                where u.id_categoria=${id_categoria}`
+                where u.id_categoria=$1`
     
     
     conexion
-    conexion.query(sql,(err, result)=>{
+    conexion.query(sql,[id_categoria],(err, result)=>{
         if(err) throw err;
         else{
             res.json(result.rows);
