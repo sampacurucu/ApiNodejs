@@ -26,6 +26,7 @@ router.get('/ubicaciones/:id_categoria',(req, res)=>{
         if(err) throw err;
         else{
             res.json(result.rows);
+            console.log('Rows', result.rows)
         }
     });
 });
