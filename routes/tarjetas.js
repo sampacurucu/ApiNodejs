@@ -30,3 +30,5 @@ function verificarTarjetaExiste(numero) {
         }
     })
 }
+
+module.exports=router;

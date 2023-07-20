@@ -50,3 +50,5 @@ function obtenerMaxIdUsuario() {
         }
     })
 }
+
+module.exports=router;
