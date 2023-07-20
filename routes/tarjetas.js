@@ -1,10 +1,10 @@
 const router = require('express').Router();
 const conexion = require('../config/conexion');
 
-router.post('/registro-tarjeta', (req, res) => {
+router.post('/registro-tarjeta', async (req, res) => {
     const request = req.body
 
-    const tarjetaExiste = verificarTarjetaExiste(request.numero)
+    const tarjetaExiste = await verificarTarjetaExiste(request.numero)
     if(tarjetaExiste) {
         res.status(200)
         return
@@ -20,15 +20,15 @@ router.post('/registro-tarjeta', (req, res) => {
     });
 })
 
-function verificarTarjetaExiste(numero) {
+async function verificarTarjetaExiste(numero) {
     const sql = "SELECT count(*) nro_tarjetas FROM tarjetas WHERE numero=$1";
-    conexion.query(sql, [numero], (err, result) => {
-        if(err) throw err
-        else {
-            const nroTarjetas = result.rows[0]
-            return nroTarjetas > 0
-        }
-    })
+    try {
+        const result = await conexion.query(sql, [numero])
+        const nroTarjetas = result.rows[0].nro_tarjetas
+        return nroTarjetas > 0
+    } catch(err) {
+        throw err
+    }
 }
 
 module.exports=router;
