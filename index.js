@@ -1,7 +1,8 @@
 require ('./config/conexion');
 
 const express= require('express');
-var cors = require('cors')
+var cors = require('cors');
+const { permitirAccesoPublico } = require('./middlewares/authorization');
 const port = (process.env.port || 4000);
 
 // express 
@@ -16,6 +17,8 @@ app.use(express.json())
 // config
 app.set('port',port)
 
+
+app.use(permitirAccesoPublico)
 
 // rutas se coloca el nombre de la api de la tabla a utilizar 
 app.use('/apidocumentos', require('./routes/documentos'))
