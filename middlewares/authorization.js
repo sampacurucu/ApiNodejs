@@ -20,7 +20,12 @@ const validarToken = (req, res, next) => {
 };
 
 const permitirAccesoPublico = (req, res, next) => {
-    const rutasPublicas = ['/autenticacion/'];
+    const rutasPublicas = [
+      '/autenticacion/',
+      '/blogs-abogados',
+      '/comentarios',
+      '/apidocumentos'
+    ];
     if (rutasPublicas.some(ruta => req.path.indexOf(ruta) >= 0)) {
       return next();
     }

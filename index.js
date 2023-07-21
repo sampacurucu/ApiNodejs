@@ -17,21 +17,7 @@ app.use(express.json())
 // config
 app.set('port',port)
 
-const rutasPublicas = [
-    '/blogs-abogados', // Esta ruta no requiere token
-    '/comentarios',    // Esta ruta no requiere token
-    '/apidocumentos'
-  ];
-
-// app.use(permitirAccesoPublico)
-// Middleware para permitir acceso público o verificar token
-app.use((req, res, next) => {
-    if (rutasPublicas.some(ruta => req.path.indexOf(ruta) >= 0)) {
-      next(); // Acceso público, no verifica token
-    } else {
-      permitirAccesoPublico(req, res, next); // Verificar token
-    }
-  });
+app.use(permitirAccesoPublico)
 
 // rutas se coloca el nombre de la api de la tabla a utilizar 
 app.use('/apidocumentos', require('./routes/documentos'))
