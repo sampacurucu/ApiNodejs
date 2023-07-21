@@ -57,13 +57,15 @@ router.post('/login', async (req,res) => {
 
         const token = generarToken({
             idUsuario: idAbogado,
-            esAdmin: suscripcion?.es_admin,
-            idSuscripcion: suscripcion?.id_suscripcion
+            idSuscripcion: suscripcion ? suscripcion.id_suscripcion : null,
+            esAdmin: suscripcion ? suscripcion.es_admin : false
         })
 
         res.status(200)
         .json({
-            token: token
+            token: token,
+            idSuscripcion: suscripcion ? suscripcion.id_suscripcion : null,
+            esAdmin: suscripcion ? suscripcion.es_admin : false
         })
         return
     } catch(err) {

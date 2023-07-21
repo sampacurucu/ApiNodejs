@@ -20,8 +20,8 @@ const validarToken = (req, res, next) => {
 };
 
 const permitirAccesoPublico = (req, res, next) => {
-    const rutasPublicas = ['/ruta-publica-1', '/ruta-publica-2'];
-    if (rutasPublicas.includes(req.path)) {
+    const rutasPublicas = ['/autenticacion/'];
+    if (rutasPublicas.some(ruta => req.path.indexOf(ruta) >= 0)) {
       return next();
     }
   

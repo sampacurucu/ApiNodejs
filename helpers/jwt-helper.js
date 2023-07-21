@@ -19,13 +19,3 @@ const verificarToken = (token) => {
 };
 
 module.exports = { generarToken, verificarToken }
-
-// Ejemplo de uso
-const usuario = { id: 1, nombre: 'Ejemplo Usuario' };
-const tokenGenerado = generarToken(usuario);
-console.log('Token generado:', tokenGenerado);
-
-const tokenVerificado = verificarToken(tokenGenerado);
-if (tokenVerificado) {
-  console.log('Token verificado:', tokenVerificado);
-}
