@@ -19,6 +19,8 @@ app.set('port',port)
 
 app.use(permitirAccesoPublico)
 
+// NOTA: instalar nodemailr: npm install nodemailer
+
 // rutas se coloca el nombre de la api de la tabla a utilizar 
 app.use('/apidocumentos', require('./routes/documentos'))
 app.use('/servicios-judiciales', require('./routes/servicios-judiciales'))
@@ -28,6 +30,7 @@ app.use('/tarjetas', require('./routes/tarjetas'))
 
 app.use('/comentarios',require('./routes/comentarios'))
 app.use('/blog',require('./routes/blog'))
+app.use('/correos',require('./routes/correo'))
 
 
 //inicializar express

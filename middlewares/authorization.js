@@ -25,6 +25,7 @@ const permitirAccesoPublico = (req, res, next) => {
       '/blogs-abogados',
       '/comentarios',
       '/blog',
+      '/correos',
       '/apidocumentos'
     ];
     if (rutasPublicas.some(ruta => req.path.indexOf(ruta) >= 0)) {
