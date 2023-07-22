@@ -27,6 +27,7 @@ app.use('/autenticacion', require('./routes/autenticacion'))
 app.use('/tarjetas', require('./routes/tarjetas'))
 
 app.use('/comentarios',require('./routes/comentarios'))
+app.use('/blog',require('./routes/blog'))
 
 
 //inicializar express
