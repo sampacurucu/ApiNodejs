@@ -78,4 +78,22 @@ router.put('/updateDocumento/:id',(req, res)=>{
 
 });
 
+//para obtener los datos del abogado una vez que inicia sesion
+router.get('/obtenerAbogado/:email', (req, res) => {
+    const emailAbog = req.params.email;
+  
+    let sql = `
+        SELECT *
+        FROM abogado
+        WHERE email = $1
+    `;
+  
+    conexion.query(sql, [emailAbog], (err, result) => {
+      if (err) throw err;
+      else {
+        res.json(result.rows);
+      }
+    });
+});
+
 module.exports=router;
