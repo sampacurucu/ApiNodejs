@@ -2,11 +2,18 @@ const router = require('express').Router();
 const conexion = require('../config/conexion');
 
 
-// get de documentos
-router.get('/allDocumentos',(req, res)=>{
-    let sql = 'SELECT * FROM documento';
+// get de documentos de los juicios de un abogado
+router.get('/allDocumentos/:idA',(req, res)=>{
+    const{idAbog}=req.params;
+    let sql = `SELECT d.* 
+        FROM documento d
+        JOIN juicio j ON d.id_juicio = j.id_juicio
+        JOIN abogado a ON a.id_abogado = j.id_abogado
+        WHERE a.id_abogado = $1
+    `;
+    
 
-    conexion.query(sql,(err, result)=>{
+    conexion.query(sql,[idAbog],(err, result)=>{
         if(err) throw err;
         else{
             res.json(result.rows);
