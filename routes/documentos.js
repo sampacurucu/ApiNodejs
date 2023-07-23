@@ -2,7 +2,7 @@ const router = require('express').Router();
 const conexion = require('../config/conexion');
 
 
-// get de documentos de los juicios de un abogado
+// get de documentos  de un abogado
 router.get('/allDocumentos/:idA',(req, res)=>{
     const{idA}=req.params;
     let sql = `SELECT d.* 
