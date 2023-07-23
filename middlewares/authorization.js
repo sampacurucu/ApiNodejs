@@ -28,6 +28,8 @@ const permitirAccesoPublico = (req, res, next) => {
       '/correos',
       '/documentos',
       '/suscripciones',
+      '/apidocumentos',
+      '/suscripciones/planes',
       '/tarjetas'
     ];
     if (rutasPublicas.some(ruta => req.path.indexOf(ruta) >= 0)) {
