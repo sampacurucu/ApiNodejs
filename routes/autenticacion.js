@@ -26,9 +26,18 @@ router.post('/registro-usuario', async (req,res) => {
     conexion.query(sql, [nuevoId, request.nombres, request.apellidos, request.email, request.clave], (err, result) => {
         if(err) throw err
         else {
+            const token = generarToken({
+                idUsuario: nuevoId,
+                idSuscripcion: null,
+                esAdmin: false
+            })
+    
             res.status(200)
             .json({
-                mensaje: 'Usuario registrado exitosamente'
+                mensaje: 'Usuario registrado exitosamente',
+                token: token,
+                idSuscripcion: null,
+                esAdmin: false
             })
         }
     });

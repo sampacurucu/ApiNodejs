@@ -26,6 +26,7 @@ app.use('/apidocumentos', require('./routes/documentos'))
 app.use('/servicios-judiciales', require('./routes/servicios-judiciales'))
 app.use('/blogs-abogados', require('./routes/blogs-abogado'))
 app.use('/autenticacion', require('./routes/autenticacion'))
+app.use('/suscripciones', require('./routes/suscripciones'))
 app.use('/tarjetas', require('./routes/tarjetas'))
 
 app.use('/comentarios',require('./routes/comentarios'))
