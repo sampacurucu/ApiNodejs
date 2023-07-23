@@ -2,6 +2,7 @@ const router = require('express').Router();
 const conexion = require('../config/conexion');
 const faker = require('faker');
 const { addMonths } = require('date-fns');
+const { generarToken } = require('../helpers/jwt-helper');
 
 router.get('/planes', async (_, res) => {
     const sql = `SELECT id, nombre, descripcion, precio, items
@@ -46,6 +47,7 @@ router.get('/planes/:idPlan', async (req, res) => {
 router.post('/procesar-pago', async (req, res) => {
     const { idPlan, renovacionAutomatica, numeroTarjeta, nombreTitular, fechaExpiracion, cvv } = req.body
     const { idUsuario } = req.sesion
+    const esAdmin = 'S'
 
     if (!numeroTarjeta || !nombreTitular || !fechaExpiracion || !cvv) {
         return res.status(400)
@@ -53,11 +55,27 @@ router.post('/procesar-pago', async (req, res) => {
     }    
 
     try {
-        await crearSuscripcion({ idPlan, renovacionAutomatica, numeroTarjeta })
-        await enlazarUsuarioASuscripcion({ idUsuario, idPlan, esAdmin: 'S' })
+        const idSuscripcion = await crearSuscripcion({ idPlan, renovacionAutomatica, numeroTarjeta })
+        await enlazarUsuarioASuscripcion({ idUsuario, idPlan, esAdmin })
+
+        const sesion = {
+            idUsuario: idUsuario,
+            idSuscripcion: idSuscripcion,
+            esAdmin
+        }
+        console.log('La sesion', sesion)
+
+        const token = generarToken(sesion)
+
         return res.status(200)
-        .json({ mensaje: 'Su pago ha sido procesado con exito!' })
+        .json({ 
+            mensaje: 'Su pago ha sido procesado con exito!',
+            token: token,
+            idSuscripcion,
+            esAdmin
+        })
     } catch(error) {
+        console.log('El error al procesar el pago', error)
         return res.status(500)
         .json({ mensaje: 'Error al procesar el pago. Intente nuevamente más tarde.', error })
     }
@@ -107,7 +125,7 @@ const crearSuscripcion = async (datos) => {
             numeroTarjeta 
         ])
 
-        return result
+        return nuevoId
     } catch(err) {
         throw err
     }
