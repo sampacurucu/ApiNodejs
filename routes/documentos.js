@@ -17,7 +17,7 @@ router.get('/allDocumentos',(req, res)=>{
 // get de un documento
 router.get('/oneDocumento/:id',(req, res)=>{
     const {id}=req.params;
-    let sql = 'SELECT * FROM documento WHERE id_documento = $1'
+    let sql = `SELECT * FROM documento WHERE id_documento = $1`
 
   
     conexion.query(sql,[id],(err, result)=>{
