@@ -51,20 +51,18 @@ router.post('/procesar-pago', async (req, res) => {
         .json({ mensaje: 'Datos de tarjeta incompletos.' });
     }    
 
-    const pagoAprobado = faker.datatype.boolean()
-    if(pagoAprobado) {
+    try {
         await crearSuscripcion({ idPlan, renovacionAutomatica, numeroTarjeta })
         await enlazarUsuarioASuscripcion({ idUsuario, idPlan, esAdmin: 'S' })
         return res.status(200)
         .json({ mensaje: 'Su pago ha sido procesado con exito!' })
+    } catch(error) {
+        return res.status(500)
+        .json({ mensaje: 'Error al procesar el pago. Intente nuevamente más tarde.', error })
     }
-
-    return res.status(500)
-    .json({ mensaje: 'Error al procesar el pago. Intente nuevamente más tarde.' })
 })
 
-async function obtenerTipoPlanPorId(idPlan) {
-    console.log('El id plan para obtener el plan', idPlan)
+const obtenerTipoPlanPorId = async (idPlan) => {
     const sql = `SELECT id, nombre, descripcion, precio, 
                     usuarios_permitidos AS usuariosPermitidos, 
                     duracion_meses AS duracionMeses,
@@ -74,19 +72,18 @@ async function obtenerTipoPlanPorId(idPlan) {
 
     try {
         const result = await conexion.query(sql, [ idPlan ])
-        console.log('Result plan', result)
         const rows = result.rows
-        return rows        
+        return rows
     } catch(err) {
         throw err
     }
 }
 
-async function crearSuscripcion(datos) {
+const crearSuscripcion = async (datos) => {
     const { idPlan, renovacionAutomatica, numeroTarjeta } = datos
-    console.log('Los datos para crear suscripcion', datos)
-    const plan = await obtenerTipoPlanPorId(idPlan)[0]
-    console.log('El plan', plan)
+    
+    const plan = (await obtenerTipoPlanPorId(idPlan))[0]
+    
     const maxIdSuscripcion = await obtenerMaxIdSuscripcion()
     const nuevoId = maxIdSuscripcion + 1
 
