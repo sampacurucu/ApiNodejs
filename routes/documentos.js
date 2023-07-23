@@ -3,8 +3,8 @@ const conexion = require('../config/conexion');
 
 
 // get de documentos
-router.get('/documentos',(req, res)=>{
-    let sql = 'SELECT * FROM documentos';
+router.get('/allDocumentos',(req, res)=>{
+    let sql = 'SELECT * FROM documento';
 
     conexion.query(sql,(err, result)=>{
         if(err) throw err;
@@ -15,9 +15,9 @@ router.get('/documentos',(req, res)=>{
 });
 
 // get de un documento
-router.get('/documentos/:id',(req, res)=>{
+router.get('/oneDocumento/:id',(req, res)=>{
     const {id}=req.params;
-    let sql = 'SELECT * FROM documentos WHERE id = $1'
+    let sql = 'SELECT * FROM documento WHERE id_documento = $1'
 
   
     conexion.query(sql,[id],(err, result)=>{
@@ -29,12 +29,12 @@ router.get('/documentos/:id',(req, res)=>{
 });
 
 //agregar un documento
-router.post('/documentos',(req,res)=>{
-    const{codigo_juicio,tipo,nombre,descripcion,documento} = req.body;
+router.post('/addDocumento',(req,res)=>{
+    const{id_juicio,juicio,nombre,descripcion,documento} = req.body;
 
-    let sql = `INSERT INTO documentos(codigo_juicio,tipo,nombre,descripcion, documento) 
+    let sql = `INSERT INTO documento(id_juicio,juicio,nombre,descripcion,documento) 
         VALUES ($1,$2,$3,$4,$5)`;
-    conexion.query(sql, [codigo_juicio,tipo,nombre,descripcion,documento],(err, rows)=>{
+    conexion.query(sql, [id_juicio,juicio,nombre,descripcion,documento],(err, rows)=>{
         if(err) throw err
         else{
             res.json({status: 'documento agregado'});
@@ -43,10 +43,10 @@ router.post('/documentos',(req,res)=>{
 });
 
 // eliminar
-router.delete('/documentos/:id',(req,res)=>{
+router.delete('/deleteDocumento/:id',(req,res)=>{
     const{id} = req.params;
 
-    let sql =`DELETE FROM documentos where id = $1`;
+    let sql =`DELETE FROM documento where id_documento = $1`;
     conexion.query(sql, [id],(err, rows)=>{
         if(err) throw err;
         else{
@@ -56,19 +56,19 @@ router.delete('/documentos/:id',(req,res)=>{
 });
 
 //modificar
-router.put('/documentos/:id',(req, res)=>{
+router.put('/updateDocumento/:id',(req, res)=>{
     const{id}=req.params
-    const{codigo_juicio,tipo,nombre,descripcion,documento} = req.body
+    const{id_juicio,juicio,nombre,descripcion,documento} = req.body
 
-    let sql = `UPDATE documentos SET
-                codigo_juicio = $1,
-                tipo =$2,
+    let sql = `UPDATE documento SET
+                id_juicio = $1,
+                juicio =$2,
                 nombre = $3,
                 descripcion = $4, 
                 documento = $5 
-                WHERE id = $6`;
+                WHERE id_documento = $6`;
     
-    conexion.query(sql, [codigo_juicio,tipo,nombre,descripcion,documento,id],(err, rows)=>{
+    conexion.query(sql, [id_juicio,juicio,nombre,descripcion,documento,id],(err, rows)=>{
         if(err) throw err;
         else{
             res.json({status: 'documento modificado'});
