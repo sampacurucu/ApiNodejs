@@ -66,7 +66,8 @@ router.put('/updateDocumento/:id',(req, res)=>{
                 nombre = $3,
                 descripcion = $4, 
                 documento = $5 
-                WHERE id_documento = $6`;
+                WHERE id_documento = $6
+            `;
     
     conexion.query(sql, [id_juicio,juicio,nombre,descripcion,documento,id],(err, rows)=>{
         if(err) throw err;

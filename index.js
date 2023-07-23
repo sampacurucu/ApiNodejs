@@ -22,6 +22,7 @@ app.use(permitirAccesoPublico)
 // NOTA: instalar nodemailr: npm install nodemailer
 
 // rutas se coloca el nombre de la api de la tabla a utilizar 
+
 app.use('/documentos', require('./routes/documentos'))
 app.use('/servicios-judiciales', require('./routes/servicios-judiciales'))
 app.use('/blogs-abogados', require('./routes/blogs-abogado'))
