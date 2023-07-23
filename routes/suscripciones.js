@@ -44,7 +44,8 @@ router.get('/planes/:idPlan', async (req, res) => {
 })
 
 router.post('/procesar-pago', async (req, res) => {
-    const { idUsuario, idPlan, renovacionAutomatica, numeroTarjeta, nombreTitular, fechaExpiracion, cvv } = req.body
+    const { idPlan, renovacionAutomatica, numeroTarjeta, nombreTitular, fechaExpiracion, cvv } = req.body
+    const { idUsuario } = req.sesion
 
     if (!numeroTarjeta || !nombreTitular || !fechaExpiracion || !cvv) {
         return res.status(400)
@@ -113,6 +114,7 @@ const crearSuscripcion = async (datos) => {
 }
 
 async function enlazarUsuarioASuscripcion(datos) {
+    console.log(datos)
     const { idUsuario, idPlan, esAdmin } = datos
 
     const sql = `INSERT INTO usuarios_suscripciones(id_usuario, id_suscripcion, es_admin)
