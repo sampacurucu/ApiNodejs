@@ -27,8 +27,6 @@ const permitirAccesoPublico = (req, res, next) => {
       '/blog',
       '/correos',
       '/documentos',
-      '/suscripciones',
-      '/apidocumentos',
       '/suscripciones/planes',
       '/tarjetas'
     ];
