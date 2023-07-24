@@ -1,6 +1,18 @@
 const router = require('express').Router();
 const conexion = require('../config/conexion');
+const multer = require('multer');
 
+// Configurar multer para guardar los archivos en una carpeta temporal
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'documentos'); // Carpeta temporal llamada "tempUploads"
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname); // Mantener el nombre original del archivo
+    }
+});
+
+const upload = multer({ storage: storage });
 
 // get de documentos  de un abogado
 router.get('/allDocumentos/:idA',(req, res)=>{
@@ -35,19 +47,6 @@ router.get('/oneDocumento/:id',(req, res)=>{
     });
 });
 
-//agregar un documento
-router.post('/addDocumento',(req,res)=>{
-    const{id_abogado,tipo,nombre,descripcion,documento} = req.body;
-
-    let sql = `INSERT INTO documento(id_abogado,tipo,nombre,descripcion,documento) 
-        VALUES ($1,$2,$3,$4,$5)`;
-    conexion.query(sql, [id_abogado,tipo,nombre,descripcion,documento],(err, rows)=>{
-        if(err) throw err
-        else{
-            res.json({status: 'documento agregado'});
-        }
-    });
-});
 
 // eliminar
 router.delete('/deleteDocumento/:id',(req,res)=>{
@@ -101,5 +100,40 @@ router.get('/obtenerAbogado/:email', (req, res) => {
       }
     });
 });
+
+//agregar un documento
+// router.post('/addDocumento',(req,res)=>{
+//     const{id_abogado,tipo,nombre,descripcion,documento} = req.body;
+
+//     let sql = `INSERT INTO documento(id_abogado,tipo,nombre,descripcion,documento) 
+//         VALUES ($1,$2,$3,$4,$5)`;
+//     conexion.query(sql, [id_abogado,tipo,nombre,descripcion,documento],(err, rows)=>{
+//         if(err) throw err
+//         else{
+//             res.json({status: 'documento agregado'});
+//         }
+//     });
+// });
+
+router.post('/addDocumento', upload.single('documento'), (req, res) => {
+    const { id_abogado, tipo, nombre, descripcion } = req.body;
+    const documento = req.file; // Obtener el archivo subido desde req.file
+  
+    let sql = `INSERT INTO documento(id_abogado, tipo, nombre, descripcion, documento) 
+      VALUES ($1, $2, $3, $4, $5)`;
+  
+    // Aquí puedes manejar el archivo "documento" de la forma que desees, ya sea guardándolo directamente
+    // en la base de datos o en una carpeta específica del servidor y almacenando su ruta en la base de datos.
+    // En este ejemplo, simplemente almacenamos el nombre del archivo en la base de datos.
+    const nombreArchivo = documento ? documento.originalname : null;
+  
+    conexion.query(sql, [id_abogado, tipo, nombre, descripcion, nombreArchivo], (err, rows) => {
+      if (err) throw err
+      else {
+        res.json({ status: 'documento agregado' });
+      }
+    });
+  });
+
 
 module.exports=router;
