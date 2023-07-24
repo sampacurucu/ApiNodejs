@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
     } catch(err) {
         return res.status(500)
         .json({
-            error: error,
+            error: err,
             mensaje: 'Error interno del servidor...'
         })
     }
@@ -26,11 +26,14 @@ router.post('/', async (req, res) => {
         const sesion = req.sesion
         const { nroIdentificacion, tipoIdentificacion, lugarNaci, razonSocial, email, phone, address, fechaNaci, tipoPersona, actividadComercial, genero } = datos
     
-        const clienteExiste = await verificarSiClienteExite(datos.nroIdentificacion)
+        const resultadosClientes = await verificarSiClienteExite(datos.nroIdentificacion)        
         let idCliente = 0
     
-        if(!clienteExiste) {
+        if(resultadosClientes?.length == 0) {
             idCliente = await crearCliente(datos)
+        } else {
+            const cliente = resultadosClientes[0]            
+            idCliente = cliente?.idcliente
         }
     
         await enlazarClienteAAbogado(sesion?.idUsuario, idCliente)
@@ -43,7 +46,7 @@ router.post('/', async (req, res) => {
     } catch(err) {
         return res.status(500)
         .json({
-            error: error,
+            error: err,
             mensaje: 'Error interno del servidor...'
         })
     }
@@ -60,6 +63,24 @@ router.delete('/:idCliente', async (req, res) => {
         .json({
             mensaje: 'Cliente eliminado exitosamente.'
         })
+        return
+    } catch(err) {
+        return res.status(500)
+        .json({
+            error: err,
+            mensaje: 'Error interno del servidor...'
+        })
+    }
+})
+
+router.get('/verificarExistencia/:nroIdentificacion', async (req, res) => {
+    try {
+        const nroIdentificacion = req.params.nroIdentificacion
+
+        const rows = await verificarSiClienteExite(nroIdentificacion)
+
+        res.status(200)
+        .json(rows > 0)
         return
     } catch(err) {
         return res.status(500)
@@ -102,13 +123,25 @@ const buscarClientesPorAbogado = async(idAbogado, filtro) => {
 }
 
 const verificarSiClienteExite = async (nroIdentificacion) => {
-    const sql = `select count(*) nro_clientes FROM clientes where nro_identificacion=$1`;
+    const sql = `select c.id_cliente AS idCliente,
+            c.nro_identificacion AS nroIdentificacion,
+            c.tipo_identificacion AS tipoIdentificacion,
+            c.lugar_naci AS lugarNaci,
+            c.razon_social AS razonSocial,
+            c.email,
+            c.phone,
+            c.address,
+            c.fecha_naci AS fechaNaci,
+            c.tipo_persona AS tipoPersona,
+            c.actividad_comercial AS actividadComercial,
+            c.genero
+        from clientes c 
+        where c.nro_identificacion=$1`;
 
     try {
         const result = await conexion.query(sql, [ nroIdentificacion ])
         const rows = result.rows
-        console.log(rows)
-        return rows > 0
+        return rows
     } catch(err) {
         throw err
     }
