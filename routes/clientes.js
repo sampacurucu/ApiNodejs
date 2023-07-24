@@ -78,9 +78,10 @@ router.get('/verificarExistencia/:nroIdentificacion', async (req, res) => {
         const nroIdentificacion = req.params.nroIdentificacion
 
         const rows = await verificarSiClienteExite(nroIdentificacion)
+        console.log('Rows existe cliente', rows)
 
         res.status(200)
-        .json(rows > 0)
+        .json(rows.length > 0)
         return
     } catch(err) {
         return res.status(500)
