@@ -64,7 +64,7 @@ router.delete('/:idCliente', async (req, res) => {
     } catch(err) {
         return res.status(500)
         .json({
-            error: error,
+            error: err,
             mensaje: 'Error interno del servidor...'
         })
     }
