@@ -8,7 +8,15 @@ const storage = multer.diskStorage({
       cb(null, 'documentos'); // Carpeta temporal llamada "tempUploads"
     },
     filename: function (req, file, cb) {
-      cb(null, file.originalname); // Mantener el nombre original del archivo
+    //   cb(null, file.originalname); // Mantener el nombre original del archivo
+        // Obtener el nombre del archivo sin extensión
+        const filenameWithoutExt = file.originalname.split('.').slice(0, -1).join('.');
+        const ext = file.originalname.split('.').pop(); // Obtener la extensión del archivo
+
+        // Generar un nombre único agregando un timestamp al nombre original
+        const uniqueFilename = `${filenameWithoutExt}-${Date.now()}.${ext}`;
+
+        cb(null, uniqueFilename);
     }
 });
 
@@ -64,17 +72,16 @@ router.delete('/deleteDocumento/:id',(req,res)=>{
 //modificar
 router.put('/updateDocumento/:id',(req, res)=>{
     const{id}=req.params
-    const{tipo,nombre,descripcion,documento} = req.body
+    const{tipo,nombre,descripcion} = req.body
 
     let sql = `UPDATE documento SET
                 tipo = $1,
                 nombre = $2,
-                descripcion = $3, 
-                documento = $4 
-                WHERE id_documento = $5
+                descripcion = $3
+                WHERE id_documento = $4
             `;
     
-    conexion.query(sql, [tipo,nombre,descripcion,documento,id],(err, rows)=>{
+    conexion.query(sql, [tipo,nombre,descripcion,id],(err, rows)=>{
         if(err) throw err;
         else{
             res.json({status: 'documento modificado'});
@@ -123,9 +130,9 @@ router.post('/addDocumento', upload.single('documento'), (req, res) => {
       VALUES ($1, $2, $3, $4, $5)`;
   
     // Aquí puedes manejar el archivo "documento" de la forma que desees, ya sea guardándolo directamente
-    // en la base de datos o en una carpeta específica del servidor y almacenando su ruta en la base de datos.
     // En este ejemplo, simplemente almacenamos el nombre del archivo en la base de datos.
-    const nombreArchivo = documento ? documento.originalname : null;
+    // const nombreArchivo = documento ? documento.originalname : null;
+    const nombreArchivo = documento ? documento.filename : null;
   
     conexion.query(sql, [id_abogado, tipo, nombre, descripcion, nombreArchivo], (err, rows) => {
       if (err) throw err
@@ -133,7 +140,61 @@ router.post('/addDocumento', upload.single('documento'), (req, res) => {
         res.json({ status: 'documento agregado' });
       }
     });
-  });
+});
 
+router.put('/updateDocumentoFile/:id',upload.single('documento'),(req, res)=>{
+    const{id}=req.params;
+    const{tipo,nombre,descripcion} = req.body;
+    const documento = req.file;
+
+    const nombreArchivo = documento ? documento.filename : null;
+    let sql = `UPDATE documento SET
+                tipo = $1,
+                nombre = $2,
+                descripcion = $3,
+                documento = $4
+                WHERE id_documento = $5
+            `;
+    
+    conexion.query(sql, [tipo,nombre,descripcion,nombreArchivo,id],(err, rows)=>{
+        if(err) throw err;
+        else{
+            res.json({status: 'documento modificado'});
+        }
+    });
+
+});
+
+const path = require('path');
+
+// Función para obtener la ruta del archivo a partir del nombre
+function obtenerRutaArchivoPorNombre(nombreArchivo) {
+  // Suponiendo que los archivos están en la carpeta 'documentos' dentro del directorio actual
+  const carpetaDocumentos = path.join(__dirname, '..', 'documentos');
+
+  // Unir la carpeta con el nombre del archivo para obtener la ruta completa
+  const rutaArchivo = path.join(carpetaDocumentos, nombreArchivo);
+
+  return rutaArchivo;
+}
+
+// Agregar una nueva ruta para descargar documentos por su nombre
+router.get('/downloadDocumento/:nombreArchivo', (req, res) => {
+    const { nombreArchivo } = req.params;
+  
+    // Lógica para obtener la ruta del archivo en el servidor a partir del nombre del archivo
+    const rutaArchivo = obtenerRutaArchivoPorNombre(nombreArchivo);
+  
+    // Enviar el archivo como respuesta
+    res.download(rutaArchivo, (err) => {
+      if (err) {
+        console.error('Error al descargar el archivo:', err);
+        // res.status(404).json({ error: 'El archivo no se encontró o no se puede descargar.' }); 
+      }else{
+        console.log(res);
+        res.status(200).end();
+      }
+    });
+});
 
 module.exports=router;
