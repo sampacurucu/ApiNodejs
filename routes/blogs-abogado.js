@@ -36,5 +36,58 @@ router.get('/blogIndividualconAbog/:id', (req, res) => {
     });
   });
 
+  //agregar los me gusta a blog
+router.put('/blogLike/:idBlog',(req, res)=>{
+  const{idBlog}=req.params
+
+  let sql = `UPDATE blog
+      SET megusta = megusta + 1
+      WHERE id_blog = $1
+    `;
+  
+  conexion.query(sql, [idBlog],(err, rows)=>{
+      if(err) throw err;
+      else{
+          res.json({status: 'like aumentado'});
+      }
+  });
+
+});
+
+  //agregar los no me gusta a blog
+  router.put('/blogDislike/:idBlog',(req, res)=>{
+    const{idBlog}=req.params
+  
+    let sql = `UPDATE blog
+        SET nomegusta = nomegusta + 1
+        WHERE id_blog = $1
+      `;
+    
+    conexion.query(sql, [idBlog],(err, rows)=>{
+        if(err) throw err;
+        else{
+            res.json({status: 'dislike aumentado'});
+        }
+    });
+  
+  });
+
+  // get de like y dislike
+router.get('/blogLikeDislike/:idBlog',(req, res)=>{
+  const {idBlog}=req.params;
+  let sql = `SELECT meGusta, noMeGusta
+    FROM blog
+    WHERE id_blog = $1
+  `;
+
+  conexion.query(sql,[idBlog],(err, result)=>{
+      if(err) throw err;
+      else{
+          res.json(result.rows);
+      }
+  });
+});
+
+
   module.exports = router;
   
