@@ -2,14 +2,72 @@ const router = require('express').Router();
 const conexion = require('../config/conexion');
 
 router.get('/', async (req, res) => {
-    const idAbogado = req.sesion?.idUsuario
-    const filtro = req.query.filtro
+    try {
+        const idAbogado = req.sesion?.idUsuario
+        const filtro = req.query.filtro
 
-    const rows = await buscarClientesPorAbogado(idAbogado, filtro?.toLowerCase())
+        const rows = await buscarClientesPorAbogado(idAbogado, filtro?.toLowerCase())
 
-    res.status(200)
-    .json(rows)
-    return
+        res.status(200)
+        .json(rows)
+        return
+    } catch(err) {
+        return res.status(500)
+        .json({
+            error: error,
+            mensaje: 'Error interno del servidor...'
+        })
+    }
+})
+
+router.post('/', async (req, res) => {
+    try {
+        const datos = req.body
+        const sesion = req.sesion
+        const { nroIdentificacion, tipoIdentificacion, lugarNaci, razonSocial, email, phone, address, fechaNaci, tipoPersona, actividadComercial, genero } = datos
+    
+        const clienteExiste = await verificarSiClienteExite(datos.nroIdentificacion)
+        let idCliente = 0
+    
+        if(!clienteExiste) {
+            idCliente = await crearCliente(datos)
+        }
+    
+        await enlazarClienteAAbogado(sesion?.idUsuario, idCliente)
+    
+        res.status(200)
+        .json({
+            mensaje: 'Cliente creado exitosamente.'
+        })
+        return
+    } catch(err) {
+        return res.status(500)
+        .json({
+            error: error,
+            mensaje: 'Error interno del servidor...'
+        })
+    }
+})
+
+router.delete('/:idCliente', async (req, res) => {
+    try {
+        const idCliente = req.params.idCliente
+        const sesion = req.sesion
+    
+        await eliminarClienteAbogado(sesion?.idUsuario, idCliente)
+    
+        res.status(200)
+        .json({
+            mensaje: 'Cliente eliminado exitosamente.'
+        })
+        return
+    } catch(err) {
+        return res.status(500)
+        .json({
+            error: error,
+            mensaje: 'Error interno del servidor...'
+        })
+    }
 })
 
 const buscarClientesPorAbogado = async(idAbogado, filtro) => {
@@ -38,6 +96,106 @@ const buscarClientesPorAbogado = async(idAbogado, filtro) => {
         const rows = result.rows
         console.log(rows)
         return rows
+    } catch(err) {
+        throw err
+    }
+}
+
+const verificarSiClienteExite = async (nroIdentificacion) => {
+    const sql = `select count(*) nro_clientes FROM clientes where nro_identificacion=$1`;
+
+    try {
+        const result = await conexion.query(sql, [ nroIdentificacion ])
+        const rows = result.rows
+        console.log(rows)
+        return rows > 0
+    } catch(err) {
+        throw err
+    }
+}
+
+const crearCliente = async (datos) => {
+    const { nroIdentificacion, tipoIdentificacion, lugarNaci, razonSocial, email, phone, address, fechaNaci, tipoPersona, actividadComercial, genero } = datos
+    
+    const maxIdClientes = await obtenerMaxIdClientes()
+    const nuevoId = maxIdClientes + 1
+
+    const sql = `INSERT INTO clientes(
+                    id_cliente,
+                    nro_identificacion,
+                    tipo_identificacion,
+                    lugar_naci,
+                    razon_social,
+                    email,
+                    phone,
+                    address,
+                    fecha_naci,
+                    tipo_persona,
+                    actividad_comercial,
+                    genero)
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`;
+
+    try {
+        const result = await conexion.query(sql, [ 
+            nuevoId, 
+            nroIdentificacion, 
+            tipoIdentificacion, 
+            lugarNaci,
+            razonSocial,
+            email,
+            phone,
+            address,
+            fechaNaci,
+            tipoPersona,
+            actividadComercial,
+            genero
+        ])
+
+        return nuevoId
+    } catch(err) {
+        throw err
+    }
+}
+
+const enlazarClienteAAbogado = async (idAbogado, idCliente) => {
+    const sql = `INSERT INTO abogados_clientes(
+            id_cliente,
+            id_abogado)
+        VALUES($1, $2)`;
+
+    try {
+        const result = await conexion.query(sql, [ 
+            idCliente, 
+            idAbogado
+        ])
+
+        return result
+    } catch(err) {
+        throw err
+    }
+}
+
+const eliminarClienteAbogado = async (idAbogado, idCliente) => {
+    const sql = `DELETE FROM abogados_clientes WHERE id_abogado=$1 AND id_cliente=$2`;
+
+    try {
+        const result = await conexion.query(sql, [ 
+            idAbogado, 
+            idCliente
+        ])
+
+        return result
+    } catch(err) {
+        throw err
+    }
+}
+
+async function obtenerMaxIdClientes() {
+    const sql = "SELECT coalesce(max(id_cliente), 0) max_id FROM clientes";
+    try {
+        const result = await conexion.query(sql)
+        const maxId = result.rows[0].max_id
+        return maxId
     } catch(err) {
         throw err
     }
