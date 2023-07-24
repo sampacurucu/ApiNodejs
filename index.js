@@ -20,6 +20,7 @@ app.set('port',port)
 app.use(permitirAccesoPublico)
 
 // NOTA: instalar nodemailr: npm install nodemailer
+// NOTA 2: instalar multer: npm install multer
 
 // rutas se coloca el nombre de la api de la tabla a utilizar 
 
