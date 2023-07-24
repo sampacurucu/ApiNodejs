@@ -3,8 +3,10 @@ const conexion = require('../config/conexion');
 
 // ADD blog
 router.post('/addBlog',(req,res)=>{
-    const{id_abogado,titulo,imagen,cuerpo}= req.body;
+    // const{id_abogado,titulo,imagen,cuerpo}= req.body;
+    const{titulo,imagen,cuerpo}= req.body;
 
+    const id_abogado=req.sesion?.idUsuario;
     let sql = `INSERT INTO blog(id_abogado,titulo,imagen,cuerpo)
         VALUES ($1,$2,$3,$4) 
     `;
@@ -17,16 +19,16 @@ router.post('/addBlog',(req,res)=>{
 });
 
 //para obtener los datos del abogado una vez que inicia sesion
-router.get('/obtenerAbogado/:email', (req, res) => {
-    const emailAbog = req.params.email;
-  
+router.get('/obtenerAbogado/', (req, res) => {
+    // const emailAbog = req.params.email;
+    const idAbog=req.sesion?.idUsuario;
     let sql = `
         SELECT *
         FROM abogado
-        WHERE email = $1
+        WHERE id_abogado = $1
     `;
   
-    conexion.query(sql, [emailAbog], (err, result) => {
+    conexion.query(sql, [idAbog], (err, result) => {
       if (err) throw err;
       else {
         res.json(result.rows);

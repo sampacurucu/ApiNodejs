@@ -24,9 +24,9 @@ const permitirAccesoPublico = (req, res, next) => {
       '/autenticacion/',
       '/blogs-abogados',
       '/comentarios',
-      '/blog',
+      // '/blog',
       '/correos',
-      '/documentos/',
+      // '/documentos/',
       '/suscripciones/planes',
       '/tarjetas',
       '/servicios-judiciales'

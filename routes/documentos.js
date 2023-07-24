@@ -23,8 +23,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // get de documentos  de un abogado
-router.get('/allDocumentos/:idA',(req, res)=>{
-    const{idA}=req.params;
+router.get('/allDocumentos/',async (req, res)=>{
+    // router.get('/allDocumentos/:idA',(req, res)=>{
+    // const{idA}=req.params;
+    const idA=req.sesion?.idUsuario;
     let sql = `SELECT d.* 
         FROM documento d
         JOIN abogado a ON a.id_abogado = d.id_abogado
@@ -91,28 +93,29 @@ router.put('/updateDocumento/:id',(req, res)=>{
 });
 
 //para obtener los datos del abogado una vez que inicia sesion
-router.get('/obtenerAbogado/:email', (req, res) => {
-    const emailAbog = req.params.email;
+// router.get('/obtenerAbogado/:email', (req, res) => {
+//     const emailAbog = req.params.email;
   
-    let sql = `
-        SELECT *
-        FROM abogado
-        WHERE email = $1
-    `;
+//     let sql = `
+//         SELECT *
+//         FROM abogado
+//         WHERE email = $1
+//     `;
   
-    conexion.query(sql, [emailAbog], (err, result) => {
-      if (err) throw err;
-      else {
-        res.json(result.rows);
-      }
-    });
-});
+//     conexion.query(sql, [emailAbog], (err, result) => {
+//       if (err) throw err;
+//       else {
+//         res.json(result.rows);
+//       }
+//     });
+// });
 
 
 router.post('/addDocumento', upload.single('documento'), (req, res) => {
-    const { id_abogado, tipo, nombre, descripcion } = req.body;
+    // const { id_abogado, tipo, nombre, descripcion } = req.body;
+    const {tipo, nombre, descripcion } = req.body;
     const documento = req.file; // Obtener el archivo subido desde req.file
-  
+    const id_abogado = req.sesion?.idUsuario;
     let sql = `INSERT INTO documento(id_abogado, tipo, nombre, descripcion, documento) 
       VALUES ($1, $2, $3, $4, $5)`;
   
