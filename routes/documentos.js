@@ -108,19 +108,6 @@ router.get('/obtenerAbogado/:email', (req, res) => {
     });
 });
 
-//agregar un documento
-// router.post('/addDocumento',(req,res)=>{
-//     const{id_abogado,tipo,nombre,descripcion,documento} = req.body;
-
-//     let sql = `INSERT INTO documento(id_abogado,tipo,nombre,descripcion,documento) 
-//         VALUES ($1,$2,$3,$4,$5)`;
-//     conexion.query(sql, [id_abogado,tipo,nombre,descripcion,documento],(err, rows)=>{
-//         if(err) throw err
-//         else{
-//             res.json({status: 'documento agregado'});
-//         }
-//     });
-// });
 
 router.post('/addDocumento', upload.single('documento'), (req, res) => {
     const { id_abogado, tipo, nombre, descripcion } = req.body;
