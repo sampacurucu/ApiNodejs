@@ -32,6 +32,7 @@ app.use('/autenticacion', require('./routes/autenticacion'))
 app.use('/suscripciones', require('./routes/suscripciones'))
 app.use('/tarjetas', require('./routes/tarjetas'))
 app.use('/clientes', require('./routes/clientes'))
+app.use('/juicios', require('./routes/juicios'))
 
 app.use('/comentarios',require('./routes/comentarios'))
 app.use('/blog',require('./routes/blog'))
