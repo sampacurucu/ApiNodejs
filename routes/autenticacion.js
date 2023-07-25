@@ -43,6 +43,51 @@ router.post('/registro-usuario', async (req,res) => {
     });
 });
 
+// registro de usuario con google
+router.post('/registro-usuario-google', async (req,res) => {
+    const request = req.body
+
+    const usuarioExiste = await verificarUsuarioExiste(request.email)
+    if(usuarioExiste) {
+        res.status(400)
+        .json({
+            mensaje: 'El usuario ya se encuentra registrado. Por favor inicie sesion con sus credenciales para acceder.'
+        })
+        return
+    }
+
+    const maxId = await obtenerMaxIdUsuario()
+    console.log('Max Id', maxId)
+    const nuevoId = maxId + 1
+
+    const sql = `INSERT INTO abogado(id_abogado, nombres, apellidos, email)
+        VALUES ($1,$2,$3,$4)`;
+
+    console.log('Body', request)
+    console.log('NuevoId', nuevoId)
+    conexion.query(
+      sql,
+      [nuevoId, request.firstName, request.lastName, request.email],
+      (err, result) => {
+        if (err) throw err;
+        else {
+          const token = generarToken({
+            idUsuario: nuevoId,
+            idSuscripcion: null,
+            esAdmin: false,
+          });
+
+          res.status(200).json({
+            mensaje: "Usuario registrado exitosamente",
+            token: token,
+            idSuscripcion: null,
+            esAdmin: false,
+          });
+        }
+      }
+    );
+});
+
 router.post('/login', async (req,res) => {
     const request = req.body
 
@@ -81,6 +126,47 @@ router.post('/login', async (req,res) => {
         throw err
     }
 });
+
+// autenticacion con google con email y token
+router.post('/login-google', async (req,res) => {
+    const request = req.body
+
+    const sql = `SELECT id_abogado FROM abogado WHERE email=$1`;
+
+    try {
+        const result = await conexion.query(sql, [ request.email ])
+        const rows = result.rows
+
+        if(rows.length == 0) {
+            res.status(400)
+            .json({
+                mensaje: 'No se encontró el usuario con el correo ingresado'
+            })
+            return
+        }
+
+        const idAbogado = rows[0].id_abogado
+        const suscripcion = await obtenerSuscripcionUsuario(idAbogado)
+
+        
+        const token = generarToken({
+            idUsuario: idAbogado,
+            idSuscripcion: suscripcion ? suscripcion.id_suscripcion : null,
+            esAdmin: suscripcion ? suscripcion.es_admin : false
+        })
+
+        res.status(200)
+        .json({
+            token: token,
+            idSuscripcion: suscripcion ? suscripcion.id_suscripcion : null,
+            esAdmin: suscripcion ? suscripcion.es_admin : false
+        })
+        return
+    } catch(err) {
+        throw err
+    }
+});
+
 
 async function verificarUsuarioExiste(correo) {
     const sql = "SELECT count(*) nro_usuarios FROM abogado WHERE email=$1";
