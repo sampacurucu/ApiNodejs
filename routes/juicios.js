@@ -94,7 +94,7 @@ const guardarJuicio = async (juicio) => {
     console.log('Datos juicio crear', juicio)
 
     const sql = `INSERT INTO juicio (id_cliente, id_abogado, id_tipo, numero_secuencial, codigo_dependencia, anio, nombre_juicio)
-                VALUES($1, $2, $3, $4, $5, $6, $7, $8)`
+                VALUES($1, $2, $3, $4, $5, $6, $7)`
 
     try {
         const result = await conexion.query(sql, [ 
@@ -109,6 +109,7 @@ const guardarJuicio = async (juicio) => {
 
         return result
     } catch(err) {
+        console.log('Error guardar juicio', err)
         throw err
     }
 }
