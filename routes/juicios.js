@@ -44,6 +44,28 @@ router.post('/', async (req, res) => {
     }
 })
 
+router.delete('/:idJuicio', async (req, res) => {
+    try {
+        const idJuicio = req.params.idJuicio
+        const sesion = req.sesion
+    
+        const resultadoJuicio = await eliminarJuicio(idJuicio, sesion.idUsuario)
+        console.log('Resultado eliminar juicio', resultadoJuicio)
+    
+        res.status(200)
+        .json({
+            mensaje: 'Juicio eliminado exitosamente.'
+        })
+        return
+    } catch(err) {
+        return res.status(500)
+        .json({
+            error: err,
+            mensaje: 'Error interno del servidor...'
+        })
+    }
+})
+
 const buscarJuiciosPorAbogado = async(idAbogado, filtro) => {
     const sql = `SELECT j.id_juicio AS idjuicio,
                     j.id_cliente AS idcliente,
@@ -113,5 +135,18 @@ const guardarJuicio = async (juicio) => {
         throw err
     }
 }
+
+const eliminarJuicio = async (idJuicio, idAbogado) => {
+    const sql = `DELETE FROM juicio WHERE id_juicio=$1 AND id_abogado=$2`
+
+    try {
+        const result = await conexion.query(sql, [ idJuicio, idAbogado ])
+
+        return result
+    } catch(err) {
+        console.log('Error eliminar juicio', err)
+        throw err
+    }
+} 
 
 module.exports=router;
