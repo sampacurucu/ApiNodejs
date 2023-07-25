@@ -44,6 +44,29 @@ router.post('/', async (req, res) => {
     }
 })
 
+router.put('/', async (req, res) => {
+    try {
+        const datos = req.body
+        const sesion = req.sesion
+        datos.idAbogado = sesion.idUsuario
+    
+        const resultadoJuicio = await modificarJuicio(datos)
+        console.log('Resultado juicio modificado', resultadoJuicio)
+    
+        res.status(200)
+        .json({
+            mensaje: 'Juicio modificado exitosamente.'
+        })
+        return
+    } catch(err) {
+        return res.status(500)
+        .json({
+            error: err,
+            mensaje: 'Error interno del servidor...'
+        })
+    }
+})
+
 router.delete('/:idJuicio', async (req, res) => {
     try {
         const idJuicio = req.params.idJuicio
@@ -132,6 +155,48 @@ const guardarJuicio = async (juicio) => {
         return result
     } catch(err) {
         console.log('Error guardar juicio', err)
+        throw err
+    }
+}
+
+const modificarJuicio = async (juicio) => {
+    const {
+        idJuicio,
+        idAbogado,
+        idCliente,
+        tipoJuicio,
+        numeroSecuencial,
+        codigoDependencia,
+        anio,
+        nombreJuicio
+    } = juicio
+
+    console.log('Datos juicio modificar', juicio)
+
+    const sql = `UPDATE juicio set id_cliente=$1,
+                                   id_tipo=$2,
+                                   numero_secuencial=$3,
+                                   codigo_dependencia=$4,
+                                   anio=$5,
+                                   nombre_juicio=$6
+                WHERE id_juicio=$7
+                AND id_abogado=$8`
+
+    try {
+        const result = await conexion.query(sql, [ 
+            idCliente, 
+            tipoJuicio,
+            numeroSecuencial,
+            codigoDependencia,
+            anio,
+            nombreJuicio?.toUpperCase(),
+            idJuicio,
+            idAbogado
+        ])
+
+        return result
+    } catch(err) {
+        console.log('Error modificar juicio', err)
         throw err
     }
 }
